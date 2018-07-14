@@ -1,8 +1,7 @@
-package com.github.multiformats
+package io.ipfs.multiformats.multibase
 
-import com.github.multiformats.MultiBase.Base.*
+import io.ipfs.multiformats.multibase.MultiBase.Base.*
 import org.apache.commons.codec.binary.Base32
-import org.apache.commons.codec.binary.BinaryCodec
 import java.math.BigInteger
 import java.util.*
 
@@ -58,10 +57,10 @@ object MultiBase {
 
     fun encode(base: Base, data: ByteArray): String {
         return when (base) {
-            BASE1 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("1"), data)
-            BASE2 -> base.prefix + String(BinaryCodec().encode(data))
-            BASE8 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("8"), data)
-            BASE10 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("10"), data)
+//            BASE1 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("1"), data)
+//            BASE2 -> base.prefix + String(BinaryCodec().encode(data))
+//            BASE8 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("8"), data)
+//            BASE10 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("10"), data)
             BASE16 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("16"), data)
             BASE16_UPPER -> base.prefix + BaseN.encode(base.alphabet, BigInteger("16"), data)
             BASE32 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("32"), data)
@@ -78,6 +77,7 @@ object MultiBase {
             BASE64_URL -> base.prefix + BaseN.encode(base.alphabet, BigInteger("64"), data)
             BASE64_PAD -> base.prefix + Base64.getEncoder().encodeToString(data)
             BASE64_URL_PAD -> base.prefix + Base64.getUrlEncoder().encodeToString(data)
+            else -> throw IllegalStateException("UnImplement multi type")
         }
     }
 
@@ -86,10 +86,10 @@ object MultiBase {
         val rest = data.substring(1)
         val base = Base.lookup(prefix)
         return when (base) {
-            BASE1 -> BaseN.decode(base.alphabet, BigInteger("1"), rest)
-            BASE2 -> BinaryCodec().decode(rest.toByteArray())
-            BASE8 -> BaseN.decode(base.alphabet, BigInteger("8"), rest)
-            BASE10 -> BaseN.decode(base.alphabet, BigInteger("10"), rest)
+//            BASE1 -> BaseN.decode(base.alphabet, BigInteger("1"), rest)
+//            BASE2 -> BinaryCodec().decode(rest.toByteArray())
+//            BASE8 -> BaseN.decode(base.alphabet, BigInteger("8"), rest)
+//            BASE10 -> BaseN.decode(base.alphabet, BigInteger("10"), rest)
             BASE16 -> BaseN.decode(base.alphabet, BigInteger("16"), rest)
             BASE16_UPPER -> BaseN.decode(base.alphabet, BigInteger("16"), rest)
             BASE32 -> BaseN.decode(base.alphabet, BigInteger("32"), rest)
@@ -106,6 +106,7 @@ object MultiBase {
             BASE64_URL -> BaseN.decode(base.alphabet, BigInteger("64"), rest)
             BASE64_PAD -> Base64.getDecoder().decode(rest)
             BASE64_URL_PAD -> Base64.getDecoder().decode(rest)
+            else -> throw IllegalStateException("UnImplement multi type")
         }
     }
 }

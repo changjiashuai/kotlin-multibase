@@ -1,4 +1,4 @@
-package com.github.multiformats
+package io.ipfs.multiformats.multibase
 
 import java.math.BigInteger
 

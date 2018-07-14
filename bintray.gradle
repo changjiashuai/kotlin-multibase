@@ -1,0 +1,141 @@
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+// read properties
+def projectName = project_name
+def projectDesc = project_desc
+def projectGroupId = project_groupId
+def projectArtifactId = project_artifactId
+def projectVersionName = project_version
+def projectPackaging = project_packaging
+def projectSiteUrl = project_siteUrl
+def projectGitUrl = project_gitUrl
+def javadocName = javadoc_name
+
+// load properties
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def developerId = properties.getProperty("developer.id")
+def developerName = properties.getProperty("developer.name")
+def developerEmail = properties.getProperty("developer.email")
+def bintrayUser = properties.getProperty("bintray.user")
+def bintrayApikey = properties.getProperty("bintray.apikey")
+
+//在这里一定要定义group version
+group = projectGroupId
+version = projectVersionName
+
+def pomConfig = {
+  licenses {
+    license {
+      name 'The Apache Software License, Version 2.0'
+      url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    }
+  }
+  developers {
+    developer {
+      id developerId
+      name developerName
+      email developerEmail
+    }
+  }
+  scm {
+    connection projectGitUrl
+    developerConnection projectGitUrl
+    url projectSiteUrl
+  }
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+
+      groupId projectGroupId
+      artifactId projectArtifactId
+      version projectVersionName
+
+      pom.withXml {
+        def root = asNode()
+        root.appendNode('description', projectDesc)
+        root.appendNode('name', projectName)
+        root.appendNode('url', projectSiteUrl)
+        root.children().last() + pomConfig
+
+        // Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
+//        configurations.compile.allDependencies.each {
+//          def dependencyNode = dependenciesNode.appendNode('dependency')
+//          dependencyNode.appendNode('groupId', it.group)
+//          dependencyNode.appendNode('artifactId', it.name)
+//          dependencyNode.appendNode('version', it.version)
+//        }
+      }
+    }
+  }
+}
+
+// This generates sources.jar
+task sourcesJar(type: Jar) {
+  from sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
+//文档打包成jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+
+//拷贝javadoc文件
+task copyDoc(type: Copy) {
+  from "${buildDir}/docs/"
+  into "docs"
+}
+
+//上传到JCenter所需要的源码文件
+artifacts {
+  //    archives javadocJar
+  archives sourcesJar
+}
+
+javadoc {
+  options {
+    encoding "UTF-8"
+    charSet 'UTF-8'
+    author true
+    version true
+    links "http://docs.oracle.com/javase/7/docs/api"
+    title javadocName
+  }
+}
+
+// bintray configuration
+bintray {
+  user = bintrayUser
+  key = bintrayApikey
+  configurations = ['archives'] //When uploading configuration files
+  publications = ['mavenJava'] //When uploading Maven-based publication files
+  pkg {
+    repo = "maven"
+    name = projectName
+    //项目描述
+    desc = projectDesc
+    websiteUrl = projectSiteUrl
+    vcsUrl = projectGitUrl
+    licenses = ["Apache-2.0"]
+    publish = true
+    version {
+      name = projectVersionName
+      desc = projectDesc
+      released = new Date()
+    }
+  }
+}
+
+task install(dependsOn: 'publishMavenJavaPublicationToMavenLocal') {
+  doLast {
+    logger.info "Installing $project.name"
+  }
+}

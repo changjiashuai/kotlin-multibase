@@ -2,6 +2,7 @@ buildscript {
   ext.kotlin_version = '1.2.30'
 
   repositories {
+    mavenLocal()
     mavenCentral()
   }
   dependencies {
@@ -9,20 +10,25 @@ buildscript {
   }
 }
 
-group 'com.github'
-version '1.0-SNAPSHOT'
+plugins {
+  id "com.jfrog.bintray" version "1.8.4"
+}
 
 apply plugin: 'kotlin'
 apply plugin: 'java'
 
 repositories {
+  mavenLocal()
   mavenCentral()
+}
+
+tasks.withType(JavaCompile) {
+  options.encoding = "UTF-8"
 }
 
 dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
   compile 'commons-codec:commons-codec:1.11'
-  compile 'junit:junit:4.12'
   testCompile 'junit:junit:4.12'
 }
 
@@ -32,3 +38,5 @@ compileKotlin {
 compileTestKotlin {
   kotlinOptions.jvmTarget = "1.8"
 }
+
+apply from: "bintray.gradle"
