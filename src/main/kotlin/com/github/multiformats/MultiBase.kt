@@ -1,6 +1,8 @@
 package com.github.multiformats
 
 import com.github.multiformats.MultiBase.Base.*
+import org.apache.commons.codec.binary.Base32
+import org.apache.commons.codec.binary.BinaryCodec
 import java.math.BigInteger
 import java.util.*
 
@@ -56,53 +58,54 @@ object MultiBase {
 
     fun encode(base: Base, data: ByteArray): String {
         return when (base) {
-            BASE1 -> BaseN.encode(base.alphabet, BigInteger("1"), data)
-            BASE2 -> BaseN.encode(base.alphabet, BigInteger("2"), data)
-            BASE8 -> BaseN.encode(base.alphabet, BigInteger("8"), data)
-            BASE10 -> BaseN.encode(base.alphabet, BigInteger("10"), data)
-            BASE16 -> BaseN.encode(base.alphabet, BigInteger("16"), data)
-            BASE16_UPPER -> BaseN.encode(base.alphabet, BigInteger("16"), data)
-            BASE32 -> BaseN.encode(base.alphabet, BigInteger("32"), data)
-            BASE32_UPPER -> BaseN.encode(base.alphabet, BigInteger("32"), data)
-            BASE32_PAD -> Base32.encodeWithPad(data)
-            BASE32_PAD_UPPER -> BaseN.encode(base.alphabet, BigInteger("32"), data)
-            BASE32_HEX -> BaseN.encode(base.alphabet, BigInteger("32"), data)
-            BASE32_HEX_UPPER -> BaseN.encode(base.alphabet, BigInteger("32"), data)
-            BASE32_HEX_PAD -> org.apache.commons.codec.binary.Base32(true).encodeToString(data).toLowerCase()
-            BASE32_HEX_PAD_UPPER -> BaseN.encode(base.alphabet, BigInteger("32"), data)
-            BASE58_FLICKR -> BaseN.encode(base.alphabet, BigInteger("58"), data)
-            BASE58_BTC -> BaseN.encode(base.alphabet, BigInteger("58"), data)
-            BASE64 -> BaseN.encode(base.alphabet, BigInteger("64"), data)
-            BASE64_URL -> BaseN.encode(base.alphabet, BigInteger("64"), data)
-            BASE64_PAD -> BaseN.encode(base.alphabet, BigInteger("64"), data)
-            BASE64_URL_PAD -> BaseN.encode(base.alphabet, BigInteger("64"), data)
+            BASE1 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("1"), data)
+            BASE2 -> base.prefix + String(BinaryCodec().encode(data))
+            BASE8 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("8"), data)
+            BASE10 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("10"), data)
+            BASE16 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("16"), data)
+            BASE16_UPPER -> base.prefix + BaseN.encode(base.alphabet, BigInteger("16"), data)
+            BASE32 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("32"), data)
+            BASE32_UPPER -> base.prefix + BaseN.encode(base.alphabet, BigInteger("32"), data)
+            BASE32_PAD -> base.prefix + Base32().encodeToString(data).toLowerCase()
+            BASE32_PAD_UPPER -> base.prefix + BaseN.encode(base.alphabet, BigInteger("32"), data)
+            BASE32_HEX -> base.prefix + BaseN.encode(base.alphabet, BigInteger("32"), data)
+            BASE32_HEX_UPPER -> base.prefix + BaseN.encode(base.alphabet, BigInteger("32"), data)
+            BASE32_HEX_PAD -> base.prefix + Base32(true).encodeToString(data).toLowerCase()
+            BASE32_HEX_PAD_UPPER -> base.prefix + Base32(true).encodeToString(data)
+            BASE58_FLICKR -> base.prefix + BaseN.encode(base.alphabet, BigInteger("58"), data)
+            BASE58_BTC -> base.prefix + BaseN.encode(base.alphabet, BigInteger("58"), data)
+            BASE64 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("64"), data)
+            BASE64_URL -> base.prefix + BaseN.encode(base.alphabet, BigInteger("64"), data)
+            BASE64_PAD -> base.prefix + Base64.getEncoder().encodeToString(data)
+            BASE64_URL_PAD -> base.prefix + Base64.getUrlEncoder().encodeToString(data)
         }
     }
 
     fun decode(data: String): ByteArray {
         val prefix = data[0]
+        val rest = data.substring(1)
         val base = Base.lookup(prefix)
         return when (base) {
-            BASE1 -> BaseN.decode(base.alphabet, BigInteger("1"), data)
-            BASE2 -> BaseN.decode(base.alphabet, BigInteger("2"), data)
-            BASE8 -> BaseN.decode(base.alphabet, BigInteger("8"), data)
-            BASE10 -> BaseN.decode(base.alphabet, BigInteger("10"), data)
-            BASE16 -> BaseN.decode(base.alphabet, BigInteger("16"), data)
-            BASE16_UPPER -> BaseN.decode(base.alphabet, BigInteger("16"), data)
-            BASE32 -> BaseN.decode(base.alphabet, BigInteger("32"), data)
-            BASE32_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), data)
-            BASE32_PAD -> Base32.decodeWithPad(data)
-            BASE32_PAD_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), data)
-            BASE32_HEX -> BaseN.decode(base.alphabet, BigInteger("32"), data)
-            BASE32_HEX_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), data)
-            BASE32_HEX_PAD -> org.apache.commons.codec.binary.Base32(true).decode(data)
-            BASE32_HEX_PAD_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), data)
-            BASE58_FLICKR -> BaseN.decode(base.alphabet, BigInteger("58"), data)
-            BASE58_BTC -> BaseN.decode(base.alphabet, BigInteger("58"), data)
-            BASE64 -> BaseN.decode(base.alphabet, BigInteger("64"), data)
-            BASE64_URL -> BaseN.decode(base.alphabet, BigInteger("64"), data)
-            BASE64_PAD -> BaseN.decode(base.alphabet, BigInteger("64"), data)
-            BASE64_URL_PAD -> BaseN.decode(base.alphabet, BigInteger("64"), data)
+            BASE1 -> BaseN.decode(base.alphabet, BigInteger("1"), rest)
+            BASE2 -> BinaryCodec().decode(rest.toByteArray())
+            BASE8 -> BaseN.decode(base.alphabet, BigInteger("8"), rest)
+            BASE10 -> BaseN.decode(base.alphabet, BigInteger("10"), rest)
+            BASE16 -> BaseN.decode(base.alphabet, BigInteger("16"), rest)
+            BASE16_UPPER -> BaseN.decode(base.alphabet, BigInteger("16"), rest)
+            BASE32 -> BaseN.decode(base.alphabet, BigInteger("32"), rest)
+            BASE32_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), rest)
+            BASE32_PAD -> Base32().decode(rest)
+            BASE32_PAD_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), rest)
+            BASE32_HEX -> BaseN.decode(base.alphabet, BigInteger("32"), rest)
+            BASE32_HEX_UPPER -> BaseN.decode(base.alphabet, BigInteger("32"), rest)
+            BASE32_HEX_PAD -> Base32(true).decode(rest)
+            BASE32_HEX_PAD_UPPER -> Base32(true).decode(rest)
+            BASE58_FLICKR -> BaseN.decode(base.alphabet, BigInteger("58"), rest)
+            BASE58_BTC -> BaseN.decode(base.alphabet, BigInteger("58"), rest)
+            BASE64 -> BaseN.decode(base.alphabet, BigInteger("64"), rest)
+            BASE64_URL -> BaseN.decode(base.alphabet, BigInteger("64"), rest)
+            BASE64_PAD -> Base64.getDecoder().decode(rest)
+            BASE64_URL_PAD -> Base64.getDecoder().decode(rest)
         }
     }
 }
