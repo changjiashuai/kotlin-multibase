@@ -131,3 +131,7 @@ hs_err_pid*
 .idea/modules/multiformats-kotlin-multibase_test.iml
 .idea/vcs.xml
 build/
+.classpath
+.project
+.settings
+bin/
