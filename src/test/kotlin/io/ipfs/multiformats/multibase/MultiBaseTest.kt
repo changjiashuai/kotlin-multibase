@@ -1,7 +1,5 @@
-package io.ipfs.multiformats
+package io.ipfs.multiformats.multibase
 
-import io.ipfs.multiformats.multibase.BaseN
-import io.ipfs.multiformats.multibase.MultiBase
 import org.junit.Assert
 import org.junit.Test
 import java.math.BigInteger
