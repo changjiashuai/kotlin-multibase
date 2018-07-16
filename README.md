@@ -18,7 +18,7 @@ Add the relevant dependency to your project:
 <dependency>
   <groupId>io.ipfs.multiformats</groupId>
   <artifactId>kotlin-multibase</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <type>pom</type>
 </dependency>
 ```
@@ -26,7 +26,7 @@ Add the relevant dependency to your project:
 #### Gradle
 
 ```gradle
-compile 'io.ipfs.multiformats:kotlin-multibase:1.0.0'
+compile 'io.ipfs.multiformats:kotlin-multibase:1.0.1'
 ```
 
 
