@@ -16,7 +16,6 @@ import java.util.*
 object MultiBase {
 
     enum class Base(val prefix: Char, val alphabet: String) {
-        BASE1('1', "1"),
         BASE2('0', "01"),
         BASE8('7', "01234567"),
         BASE10('9', "0123456789"),
@@ -57,7 +56,6 @@ object MultiBase {
 
     fun encode(base: Base, data: ByteArray): String {
         return when (base) {
-//            BASE1 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("1"), data)
 //            BASE2 -> base.prefix + String(BinaryCodec().encode(data))
 //            BASE8 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("8"), data)
 //            BASE10 -> base.prefix + BaseN.encode(base.alphabet, BigInteger("10"), data)
@@ -86,7 +84,6 @@ object MultiBase {
         val rest = data.substring(1)
         val base = Base.lookup(prefix)
         return when (base) {
-//            BASE1 -> BaseN.decode(base.alphabet, BigInteger("1"), rest)
 //            BASE2 -> BinaryCodec().decode(rest.toByteArray())
 //            BASE8 -> BaseN.decode(base.alphabet, BigInteger("8"), rest)
 //            BASE10 -> BaseN.decode(base.alphabet, BigInteger("10"), rest)
