@@ -12,6 +12,15 @@
 
 Add the relevant dependency to your project:
 
+```groovy
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+
 #### Maven
 
 ```maven
